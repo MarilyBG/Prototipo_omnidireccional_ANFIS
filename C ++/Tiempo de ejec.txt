@@ -1,0 +1,249 @@
+#include <iostream>
+#include <chrono>
+using namespace std;
+using namespace std::chrono;
+int i=0;
+// --- Tus funciones ---
+float fuzzy(double X,double A,double B,double C) {
+    float m=0.0;
+    if ((A<=X) && (X<=B)) {
+        m=(X-A)/(B-A);
+    } else if ((B<=X) && (X<=C)) {
+        m=(C-X)/(C-B);
+    } else {
+        m=0.0;
+    }
+    return m;
+}
+
+float W1_fuzzy(float Vx_,float Vy_,float Wp_)
+{
+    float Vxb=0.0,Vxm=0.0,VxA=0.0,Vyb=0.0,Vym=0.0,VyA=0.0,Wpb=0.0,Wpm=0.0,WpA=0.0;
+    float Rules[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    float min_pert[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    float Val_num[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    float Num=0.0, Val_min_pert=0.0, OUT=0.0;
+    //funcion de salida
+    float Pert_Vec[]={-2445,-1382,-318.2,-2445,-1382,-318.2,-2445,-1382,-318.2,-1020,43.82,1107,-1020,43.82,1107,-1020,43.82,1107,405.9,1469,2533,405.9,1469,2533,405.9,1469,2533};
+    //Fuzificacion 
+    Vxb=fuzzy(Vx_,-242.3, -120.1, 1.988);
+    Vxm=fuzzy(Vx_,-120.1, 1.988, 124.1);
+    VxA=fuzzy(Vx_,1.988, 124.1, 246.3);
+    
+    Vyb=fuzzy(Vy_,-220.2, -109.9, 0.5094);
+    Vym=fuzzy(Vy_,-109.9, 0.5094, 110.9);
+    VyA=fuzzy(Vy_,0.5094, 110.9, 221.2);
+    
+    Wpb=fuzzy(Wp_,-30.94, -15.32, 0.3029);
+    Wpm=fuzzy(Wp_,-15.32, 0.3029, 15.92);
+    WpA=fuzzy(Wp_,0.3029, 15.92, 31.54);
+    
+    //reglas e inferencia
+    //1
+    if ((Vxb > 0) &&  (Vyb > 0) && (Wpb > 0))
+    {
+        Rules[0]=Pert_Vec[0];
+        min_pert[0]=(Vxb*Vyb*Wpb);
+    }
+    //2
+    if ((Vxb > 0) &&  (Vyb > 0) && (Wpm > 0))
+    {
+        Rules[1]=Pert_Vec[1];
+        min_pert[1]=(Vxb*Vyb*Wpm);
+    }
+    //3
+    if ((Vxb > 0) &&  (Vyb > 0) && (WpA > 0))
+    {
+        Rules[2]=Pert_Vec[2];
+        min_pert[2]=(Vxb*Vyb*WpA);
+    }
+    //4
+    if ((Vxb > 0) &&  (Vym > 0) && (Wpb > 0))
+    {
+        Rules[3]=Pert_Vec[3];
+        min_pert[3]=(Vxb*Vym*Wpb);
+    }
+    //5
+    if ((Vxb > 0) &&  (Vym > 0) && (Wpm > 0))
+    {
+        Rules[4]=Pert_Vec[4];
+        min_pert[4]=(Vxb*Vym*Wpm);
+    }
+    //6
+    if ((Vxb > 0) &&  (Vym > 0) && (WpA > 0))
+    {
+        Rules[5]=Pert_Vec[5];
+        min_pert[5]=(Vxb*Vym*WpA);
+    }
+    //7
+    if ((Vxb > 0) &&  (VyA > 0) && (Wpb > 0))
+    {
+        Rules[6]=Pert_Vec[6];
+        min_pert[6]=(Vxb*VyA*Wpb);
+    }
+    //8
+    if ((Vxb > 0) &&  (VyA > 0) && (Wpm > 0))
+    {
+        Rules[7]=Pert_Vec[7];
+        min_pert[7]=(Vxb*VyA*Wpm);
+    }
+    //9
+    if ((Vxb > 0) &&  (VyA > 0) && (WpA > 0))
+    {
+        Rules[8]=Pert_Vec[8];
+        min_pert[8]=(Vxb*VyA*WpA);
+    }
+    //10
+    if ((Vxm > 0) &&  (Vyb > 0) && (Wpb > 0))
+    {
+        Rules[9]=Pert_Vec[9];
+        min_pert[9]=(Vxm*Vyb*Wpb);
+    }
+    //11
+    if ((Vxm > 0) &&  (Vyb > 0) && (Wpm > 0))
+    {
+        Rules[10]=Pert_Vec[10];
+        min_pert[10]=(Vxm*Vyb*Wpm);
+    }
+    //12
+    if ((Vxm > 0) &&  (Vyb > 0) && (WpA > 0))
+    {
+        Rules[11]=Pert_Vec[11];
+        min_pert[11]=(Vxm*Vyb*WpA);
+    }
+    //13
+    if ((Vxm > 0) &&  (Vym > 0) && (Wpb > 0))
+    {
+        Rules[12]=Pert_Vec[12];
+        min_pert[12]=(Vxm*Vym*Wpb);
+    }
+    //14
+    if ((Vxm > 0) &&  (Vym > 0) && (Wpm > 0))
+    {
+        Rules[13]=Pert_Vec[13];
+        min_pert[13]=(Vxm*Vym*Wpm);
+    }
+    //15
+    if ((Vxm > 0) &&  (Vym > 0) && (WpA > 0))
+    {
+        Rules[14]=Pert_Vec[14];
+        min_pert[14]=(Vxm*Vym*WpA);
+    }
+    //16
+    if ((Vxm > 0) &&  (VyA > 0) && (Wpb > 0))
+    {
+        Rules[15]=Pert_Vec[15];
+        min_pert[15]=(Vxm*VyA*Wpb);
+    }
+    //17
+    if ((Vxm > 0) &&  (VyA > 0) && (Wpm > 0))
+    {
+        Rules[16]=Pert_Vec[16];
+        min_pert[16]=(Vxm*VyA*Wpm);
+    }
+    //18
+    if ((Vxm > 0) &&  (VyA > 0) && (WpA > 0))
+    {
+        Rules[17]=Pert_Vec[17];
+        min_pert[17]=(Vxm*VyA*WpA);
+    }
+    //19
+    if ((VxA > 0) &&  (Vyb > 0) && (Wpb > 0))
+    {
+        Rules[18]=Pert_Vec[18];
+        min_pert[18]=(VxA*Vyb*Wpb);
+    }
+    //20
+    if ((VxA > 0) &&  (Vyb > 0) && (Wpm > 0))
+    {
+        Rules[19]=Pert_Vec[19];
+        min_pert[19]=(VxA*Vyb*Wpm);
+    }
+    //21
+    if ((VxA > 0) &&  (Vyb > 0) && (WpA > 0))
+    {
+        Rules[20]=Pert_Vec[20];
+        min_pert[20]=(VxA*Vyb*WpA);
+    }
+    //22
+    if ((VxA > 0) &&  (Vym > 0) && (Wpb > 0))
+    {
+        Rules[21]=Pert_Vec[21];
+        min_pert[21]=(VxA*Vym*Wpb);
+    }
+    //23
+    if ((VxA > 0) &&  (Vym > 0) && (Wpm > 0))
+    {
+        Rules[22]=Pert_Vec[22];
+        min_pert[22]=(VxA*Vym*Wpm);
+    }
+    //24
+    if ((VxA > 0) &&  (Vym > 0) && (WpA > 0))
+    {
+        Rules[23]=Pert_Vec[23];
+        min_pert[23]=(VxA*Vym*WpA);
+    }
+    //25
+    if ((VxA > 0) &&  (VyA > 0) && (Wpb > 0))
+    {
+        Rules[24]=Pert_Vec[24];
+        min_pert[24]=(VxA*VyA*Wpb);
+    }
+    //26
+    if ((VxA > 0) &&  (VyA > 0) && (Wpm > 0))
+    {
+        Rules[25]=Pert_Vec[25];
+        min_pert[25]=(VxA*VyA*Wpm);
+    }
+    //27
+    if ((VxA > 0) &&  (VyA > 0) && (WpA > 0))
+    {
+        Rules[26]=Pert_Vec[26];
+        min_pert[26]=(VxA*VyA*WpA);
+    }
+    //defuzificacion
+    
+    for(i=0;i<27;i++)
+    {
+        Val_num[i]=Rules[i]*min_pert[i];
+    }
+    for(i=0;i<27;i++)
+    {
+        Num=Num+Val_num[i];
+        Val_min_pert=Val_min_pert+min_pert[i];
+    }
+    
+    OUT=Num/Val_min_pert;
+    OUT=OUT*10.0; //convertir de pps -> pps*10
+    return OUT;
+}
+
+float W1_CI(float Vx_,float Vy_,float Wp_) {
+    float OUT=0.0;
+    float R=11.666, r=3.0; // valores de ejemplo
+    OUT=((0.6666*Vx_)+(0*Vy_)+(R*Wp_/3.0))/r;
+    OUT=OUT*1650/3.141592;
+    return OUT;
+}
+
+// --- Benchmark ---
+int main() {
+    float Vx=22.0, Vy=22.0, Wp=0.0;
+
+    // Medir W1_fuzzy
+    auto start_fuzzy = high_resolution_clock::now();
+    for(int i=0;i<100000;i++) { W1_fuzzy(Vx,Vy,Wp); }
+    auto end_fuzzy = high_resolution_clock::now();
+    auto duration_fuzzy = duration_cast<microseconds>(end_fuzzy - start_fuzzy).count();
+
+    // Medir W1_CI
+    auto start_CI = high_resolution_clock::now();
+    for(int i=0;i<100000;i++) { W1_CI(Vx,Vy,Wp); }
+    auto end_CI = high_resolution_clock::now();
+    auto duration_CI = duration_cast<microseconds>(end_CI - start_CI).count();
+
+    cout << "Tiempo W1_fuzzy: " << duration_fuzzy << " us" << endl;
+    cout << "Tiempo W1_CI: " << duration_CI << " us" << endl;
+    cout << W1_fuzzy(Vx,Vy,Wp) << endl;
+    cout << W1_CI(Vx,Vy,Wp) << endl;
+}
